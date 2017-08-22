@@ -1,3 +1,5 @@
+//OBJETO CALCULADORA: Campos necesarios
+var	calculadora = {"valor":[], "operacion":"", "resuelto":false};
 
 
 //CALCULADORA: EVENTO DE MOUSE POR TECLA
@@ -7,9 +9,9 @@ document.getElementById("on").addEventListener("click", function(){
 	imgTecla = this;
 	efectoImgTecla(); });
 document.getElementById("sign").addEventListener("click", function(){
-	mostrarNumero("-");
 	imgTecla = this;
-	efectoImgTecla(); })
+	efectoImgTecla(); 
+	cambiarSigno(); })
 document.getElementById("raiz").addEventListener("click", function(){
 	imgTecla = this;
 	efectoImgTecla(); });
@@ -169,50 +171,78 @@ function restaurarImgTecla(){
 }
 
 
+//CALCULADORA: CAMBIAR DE SIGNO
+function cambiarSigno(){
+	var enPantalla = document.getElementById("display").innerText;
+	if(enPantalla.substring(0, 1)=="-"){		//Cambia de signo negativo a positivo
+		tamanio = enPantalla.length;
+		polaridad = enPantalla.substring(1, tamanio);
+	}else{								//Cambia de signo positivo a negativo
+		polaridad = "-"+enPantalla;
+	}
+	document.getElementById("display").innerHTML = polaridad;
+}
+
+
 //CALCULADORA: INSERTAR EL VALOR DE LA TECLA EN LA PANTALLA
 function mostrarNumero(numero){
 	var enPantalla = document.getElementById("display").innerText;
 	if(enPantalla.length<=7){
 		if(enPantalla=="0" && numero!="."){enPantalla="";}			//Borrar el Cero inicial al oprimir un numero
-		if(enPantalla.indexOf("-")>=0 && numero=="-"){numero="";}	//Borrar cuando hay mas de un "-"
+		//if(enPantalla.indexOf("-")>=0 && numero=="-"){numero="";}	//Borrar cuando hay mas de un "-"
 		if(enPantalla.indexOf(".")>=0 || enPantalla=="-"){
 			if(numero=="."){numero="";}}							//Borrar cuando hay mas de un "."
-		var concatenarPantalla = enPantalla+numero;
-		mostrarPantalla = document.getElementById("display").innerHTML = concatenarPantalla;
+
+		
+		if(calculadora.resuelto==true){
+			calculadora.resuelto=false;	//Verificador de operacion consecutiva
+			mostrarPantalla = document.getElementById("display").innerHTML = numero;
+		}else{
+			var concatenarPantalla = enPantalla+numero;
+			mostrarPantalla = document.getElementById("display").innerHTML = concatenarPantalla;
+		}
 	}
 }
 	  
 	  
-var	calculadora = {"valor":[], "operacion":""};
-//CALCULADORA: CALCULAR OPERACIONES
+//CALCULADORA: IDENTIFICAR OPERACIONES
 function fnOperar(operador){
 	var enPantalla = document.getElementById("display").innerText;
 	calculadora.valor.push(enPantalla);
 	calculadora.operacion = operador;
-	document.getElementById("display").innerHTML = "0";
+	document.getElementById("display").innerHTML = "";
 }
 
+
+//CALCULADORA: CALCULAR OPERACIONES
 function fnResultado(){
+	if(calculadora.resuelto==false){
 	var enPantalla = document.getElementById("display").innerText;
 	calculadora.valor.push(enPantalla);
-		var valor1 = parseInt(calculadora.valor[0]);
-		var valor2 = parseInt(calculadora.valor[1]);
+		var valor1 = Number(calculadora.valor[0]);
+		var valor2 = Number(calculadora.valor[1]);
 		var operacion = calculadora.operacion;
 		switch(operacion){
    			case "/":
-				document.getElementById("display").innerHTML = valor1/valor2;
+				resultado = String(valor1/valor2);
+				document.getElementById("display").innerHTML = resultado.substring(0, 8);
 				break;
   			case "*":
-				document.getElementById("display").innerHTML = valor1*valor2;
+				resultado = String(valor1*valor2);
+				document.getElementById("display").innerHTML = resultado.substring(0, 8);
 				break;			
 			case "-":
-				document.getElementById("display").innerHTML = valor1-valor2;
+				resultado = String(valor1-valor2);
+				document.getElementById("display").innerHTML = resultado.substring(0, 8);
 				break;
   			case "+":
-				document.getElementById("display").innerHTML = valor1+valor2;
+				resultado = String(valor1+valor2);
+				document.getElementById("display").innerHTML = resultado.substring(0, 8);
 				break;
 		}
 		calculadora.valor.splice(calculadora.valor);	//Vaciar Array
+		calculadora.resuelto=true;						//Verificador de operacion consecutiva
+	}
 }
 
 
@@ -220,4 +250,5 @@ function fnResultado(){
 function resetearPantalla(){
 	document.getElementById("display").innerHTML = "0";
 	calculadora.valor.splice(calculadora.valor);	//Vaciar Array
+	calculadora.resuelto=false;						//Verificador de operacion consecutiva
 }
